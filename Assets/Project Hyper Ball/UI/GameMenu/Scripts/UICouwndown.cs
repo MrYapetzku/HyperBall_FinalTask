@@ -1,20 +1,18 @@
 using System.Collections;
 using UnityEngine;
 
-public class GameAnimations : MonoBehaviour
+public class UICouwndown : MonoBehaviour
 {
     [SerializeField] private UIPopup _popup;
-    [SerializeField] private BallMover _ballMover;
     [SerializeField] private float _countMassageTime;
     [SerializeField] private string _startMassage;
 
     private void OnEnable()
     {
-        _ballMover.enabled = false;
-        StartCoroutine(ShowStartAnimation());
+        StartCoroutine(ShowStartCountdouwn());
     }
 
-    private IEnumerator ShowStartAnimation()
+    private IEnumerator ShowStartCountdouwn()
     {
         yield return new WaitForSeconds(_countMassageTime);
         for (int i = 3; i > 0; i--)        {
@@ -22,7 +20,5 @@ public class GameAnimations : MonoBehaviour
             yield return new WaitForSeconds(_countMassageTime);
         }
         _popup.ShowMassage(_startMassage);
-        _ballMover.enabled = true;
     }
-
 }

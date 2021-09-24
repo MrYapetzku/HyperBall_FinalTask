@@ -1,13 +1,9 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
-[RequireComponent(typeof(BallMover),typeof(AudioSource),typeof(Animator))]
-[RequireComponent(typeof(Rigidbody))]
 public class CollisionHandler : MonoBehaviour
 {
-    [SerializeField] private float _gemeOverDelay;
-    [SerializeField] private Vector3 _reboundVector;
+    [SerializeField] private GameSoundsSourse _gameSoundsSourse;
 
     public event UnityAction GameEnding;
     public event UnityAction<int> CoinCatched;
@@ -22,10 +18,12 @@ public class CollisionHandler : MonoBehaviour
         {
             if (_currentBonusCharges == 0)
             {
-                StartCoroutine(SetGameOver(_gemeOverDelay));
+                _gameSoundsSourse.PlayGameOverSound();
+                GameEnding?.Invoke();
             }
             else
             {
+                _gameSoundsSourse.PlayObstacleSoundDestroy();
                 obstacle.Disable();
                 _currentBonusCharges--;
                 BonusChargesChanged?.Invoke(_currentBonusCharges);
@@ -39,32 +37,18 @@ public class CollisionHandler : MonoBehaviour
 
         if (coin)
         {
+            _gameSoundsSourse.PlayCoinSound();
             CoinCatched?.Invoke(coin.ScoreValue);
             coin.Disable();
         }
 
         if (powerUp)
         {
+            _gameSoundsSourse.PlayPowerUpSound();
             _currentBonusCharges += powerUp.BonusCharges;
             BonusChargesChanged?.Invoke(_currentBonusCharges);
             CoinCatched?.Invoke(powerUp.ScoreValue);
             powerUp.Disable();
         }
-    }
-
-    private IEnumerator SetGameOver(float gameOverDelay)
-    {
-        BallMover mover = GetComponent<BallMover>();
-        mover.enabled = false;
-        AudioSource _gameOverSound = GetComponent<AudioSource>();
-        _gameOverSound.Play();
-        Animator animator = GetComponent<Animator>();
-        animator.SetTrigger(BallAnimator.GameOver);
-        Rigidbody rigidbody = GetComponent<Rigidbody>();
-        rigidbody.velocity = Vector3.zero;
-        rigidbody.AddForce(_reboundVector, ForceMode.Impulse);
-        yield return new WaitForSeconds(gameOverDelay);
-        mover.enabled = true;
-        GameEnding?.Invoke();
-    }
+    }    
 }
