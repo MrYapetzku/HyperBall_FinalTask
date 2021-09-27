@@ -23,7 +23,7 @@ public class BallMover : MonoBehaviour
         _currentSpeed = _speed;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         _rigidbody.velocity = new Vector3(0, 0, _currentSpeed);
 
